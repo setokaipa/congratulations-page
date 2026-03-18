@@ -396,6 +396,9 @@
     }
     .change-pw { font-size: 0.72rem; color: var(--text-3); text-align: center; margin-top: 4px; cursor: pointer; text-decoration: underline; }
     .change-pw:hover { color: var(--primary); }
+    .btn-export { background: linear-gradient(135deg, #1a6b8a, #0d4f6b); color: #fff; }
+    .btn-export:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 3px 12px rgba(26,107,138,0.35); }
+    .export-note { font-size: 0.65rem; color: var(--text-3); text-align: center; margin-top: 4px; line-height: 1.5; }
 
     /* ══════════════════════════════════════
        MOBILE: Admin layout stacks vertically
@@ -644,6 +647,15 @@
         </div>
 
         <div class="sep"></div>
+        <div class="stitle">نشر الصفحة</div>
+        <button class="btn btn-export" id="exportBtn" onclick="exportPage()">
+          📤 تصدير الصفحة
+        </button>
+        <div class="export-note">
+          يُدمج التصاميم في الصفحة — ارفع الملف الناتج ليراه جميع الموظفين
+        </div>
+
+        <div class="sep"></div>
         <div class="stitle">الأمان</div>
         <div class="change-pw" onclick="changePw()">🔑 تغيير كلمة المرور</div>
 
@@ -658,6 +670,10 @@
 /* ════════════════════════════════
    STATE
 ════════════════════════════════ */
+// @@BAKED_START
+const BAKED_DESIGNS = null;
+// @@BAKED_END
+
 const DESIGNS = {
   1: { img: null, cfg: { x:50, y:50, sz:60, w:'600', clr:'#ffffff', al:'center', sh:6 } },
   2: { img: null, cfg: { x:50, y:50, sz:60, w:'600', clr:'#ffffff', al:'center', sh:6 } }
@@ -695,17 +711,29 @@ function goAdmin() {
    LOAD SAVED DATA
 ════════════════════════════════ */
 function loadSavedImages() {
+  // Priority 1: data baked into the page (from export)
+  if (BAKED_DESIGNS) {
+    [1, 2].forEach(n => {
+      const d = BAKED_DESIGNS[n];
+      if (!d) return;
+      if (d.cfg) DESIGNS[n].cfg = { ...DESIGNS[n].cfg, ...d.cfg };
+      if (d.src) {
+        const img = new Image();
+        img.onload = () => { DESIGNS[n].img = img; updateAfterLoad(n); };
+        img.src = d.src;
+      }
+    });
+    return;
+  }
+  // Priority 2: localStorage (admin's own device)
   [1, 2].forEach(n => {
-    if (DESIGNS[n].img) return; // already loaded
+    if (DESIGNS[n].img) return;
     const imgData = localStorage.getItem('cardImage' + n);
     const cfgData = localStorage.getItem('cardConfig' + n);
     if (cfgData) { try { DESIGNS[n].cfg = {...DESIGNS[n].cfg, ...JSON.parse(cfgData)}; } catch(e){} }
     if (imgData) {
       const img = new Image();
-      img.onload = () => {
-        DESIGNS[n].img = img;
-        updateAfterLoad(n);
-      };
+      img.onload = () => { DESIGNS[n].img = img; updateAfterLoad(n); };
       img.src = imgData;
     }
   });
@@ -992,6 +1020,55 @@ function saveDesign() {
   localStorage.setItem('cardConfig' + activeDesign, JSON.stringify(DESIGNS[activeDesign].cfg));
   document.getElementById('savedBadge').style.display = 'block';
   setTimeout(() => document.getElementById('savedBadge').style.display = 'none', 3000);
+}
+
+/* ════════════════════════════════
+   EXPORT PAGE (bake designs into HTML)
+════════════════════════════════ */
+async function exportPage() {
+  readUIIntoConfig(activeDesign);
+
+  if (!DESIGNS[1].img && !DESIGNS[2].img) {
+    alert('يرجى رفع تصميم واحد على الأقل قبل التصدير.');
+    return;
+  }
+
+  const btn = document.getElementById('exportBtn');
+  btn.textContent = '⏳ جاري التصدير...';
+  btn.disabled = true;
+
+  try {
+    // Build the data object (base64 images + configs)
+    const data = {
+      1: { src: DESIGNS[1].img ? DESIGNS[1].img.src : null, cfg: DESIGNS[1].cfg },
+      2: { src: DESIGNS[2].img ? DESIGNS[2].img.src : null, cfg: DESIGNS[2].cfg }
+    };
+
+    // Fetch the page source
+    const resp = await fetch(location.pathname || 'index.html');
+    let html = await resp.text();
+
+    // Replace the BAKED_DESIGNS block (handles null or previous export)
+    html = html.replace(
+      /\/\/ @@BAKED_START[\s\S]*?\/\/ @@BAKED_END/,
+      '// @@BAKED_START\nconst BAKED_DESIGNS = ' + JSON.stringify(data) + ';\n// @@BAKED_END'
+    );
+
+    // Download
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'index.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    btn.textContent = '✅ تم — ارفع الملف الآن';
+    setTimeout(() => { btn.textContent = '📤 تصدير الصفحة'; btn.disabled = false; }, 3500);
+  } catch (e) {
+    btn.textContent = '📤 تصدير الصفحة';
+    btn.disabled = false;
+    alert('تعذّر التصدير.\nتأكد أن الصفحة مرفوعة على سيرفر (ليس فتحاً مباشراً من الجهاز).');
+  }
 }
 
 /* ════════════════════════════════
