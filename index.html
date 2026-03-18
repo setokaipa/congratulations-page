@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بطاقة المعايدة | أصول</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Beiruti:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #f2f6ea;
+      --panel:   #ffffff;
+      --border:  #c8d8b0;
+      --primary: #4a5c34;
+      --accent:  #3d4e2a;
+      --text-1:  #2a3518;
+      --text-3:  #88a460;
+      --gold:    #b8941e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Beiruti', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header img { height: 44px; }
+    #logoFallback { font-size: 1.5rem; font-weight: 900; color: var(--primary); display: none; }
+    .header-title h1 { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+    .header-title small { font-size: 0.72rem; color: var(--text-3); }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      width: 100%;
+      max-width: 680px;
+      padding: 28px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* ── No card message ── */
+    .no-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 1rem;
+      line-height: 2.2;
+      width: 100%;
+    }
+
+    /* ── Step label ── */
+    .step-label {
+      align-self: flex-start;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Design chooser ── */
+    .designs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .design-card {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .design-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(74,92,52,0.15);
+      transform: translateY(-2px);
+    }
+
+    .design-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px rgba(74,92,52,0.25);
+    }
+
+    .design-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 26px; height: 26px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .design-card img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+    }
+
+    .design-card .card-label {
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-1);
+      text-align: center;
+      border-top: 1px solid var(--border);
+      background: #fafcf6;
+    }
+
+    .design-card.selected .card-label {
+      background: #eef6e0;
+      color: var(--primary);
+    }
+
+    /* ── Name form ── */
+    .name-form {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      width: 100%;
+      box-shadow: 0 3px 14px rgba(74,92,52,0.08);
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    #empName {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: 'Beiruti', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: #f8faf3;
+      color: var(--text-1);
+      transition: border-color 0.2s;
+    }
+    #empName:focus { outline: none; border-color: var(--primary); }
+
+    /* ── Preview ── */
+    .preview-wrap {
+      margin-top: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f0f4e8;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #preview { max-width: 100%; display: block; border-radius: 10px; }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Beiruti', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-top: 10px;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #9a7c10);
+      color: #fff;
+    }
+    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184,148,30,0.35); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    footer {
+      margin-top: auto;
+      padding: 14px;
+      font-size: 0.72rem;
+      color: var(--text-3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="أصول"
+       onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block'">
+  <span id="logoFallback">أصول</span>
+  <div class="header-title">
+    <h1>بطاقة المعايدة</h1>
+    <small>أضف اسمك واحصل على بطاقتك الخاصة</small>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- No card fallback -->
+  <div id="noCardMsg" class="no-card" style="display:none;">
+    🎴<br>لم يتم إعداد البطاقة بعد.<br>
+    <span style="font-size:0.85rem;">يرجى التواصل مع المسؤول.</span>
+  </div>
+
+  <!-- Step 1: Choose design -->
+  <div id="step1" style="display:none; width:100%;">
+    <div class="step-label">الخطوة 1 — اختر تصميم البطاقة</div>
+    <div class="designs-grid" style="margin-top:10px;">
+      <div class="design-card" id="card1" onclick="selectDesign(1)">
+        <img id="thumb1" src="" alt="التصميم الأول">
+        <div class="card-label">التصميم الأول</div>
+      </div>
+      <div class="design-card" id="card2" onclick="selectDesign(2)">
+        <img id="thumb2" src="" alt="التصميم الثاني">
+        <div class="card-label">التصميم الثاني</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Enter name -->
+  <div id="step2" style="display:none; width:100%;">
+    <div class="step-label">الخطوة 2 — أدخل اسمك</div>
+    <div class="name-form" style="margin-top:10px;">
+      <label class="form-label">الاسم الكامل</label>
+      <input type="text" id="empName" placeholder="اكتب اسمك هنا..." oninput="onNameChange()">
+
+      <div class="preview-wrap" id="previewWrap">
+        <canvas id="preview"></canvas>
+      </div>
+
+      <button class="btn btn-gold" id="downloadBtn" onclick="downloadCard()" disabled>
+        ⬇️ تحميل بطاقتي
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<footer>أصول &copy; 2025</footer>
+<canvas id="hiresCanvas" style="display:none;"></canvas>
+
+<script>
+  const images = { 1: null, 2: null };
+  const configs = { 1: null, 2: null };
+  let selectedDesign = null;
+
+  (function init() {
+    let available = 0;
+
+    [1, 2].forEach(n => {
+      const img = localStorage.getItem(`cardImage${n}`);
+      const cfg = localStorage.getItem(`cardConfig${n}`);
+      if (img) {
+        const el = new Image();
+        el.onload = () => {
+          images[n] = el;
+          document.getElementById(`thumb${n}`).src = img;
+          available++;
+          if (available === 1) checkAvailability();
+        };
+        el.src = img;
+      }
+      if (cfg) { try { configs[n] = JSON.parse(cfg); } catch(e){} }
+    });
+
+    // If neither loaded after a tick
+    setTimeout(checkAvailability, 300);
+  })();
+
+  function checkAvailability() {
+    const has1 = !!images[1], has2 = !!images[2];
+    if (!has1 && !has2) {
+      document.getElementById('noCardMsg').style.display = 'block';
+      return;
+    }
+    // If only one design exists, skip chooser and auto-select
+    if (has1 && !has2) { autoSelect(1); return; }
+    if (!has1 && has2) { autoSelect(2); return; }
+    // Both available: show chooser
+    document.getElementById('step1').style.display = 'block';
+    document.getElementById('step2').style.display = 'block';
+  }
+
+  function autoSelect(n) {
+    document.getElementById('step2').style.display = 'block';
+    selectedDesign = n;
+  }
+
+  function selectDesign(n) {
+    if (!images[n]) return;
+    selectedDesign = n;
+    document.getElementById('card1').classList.toggle('selected', n === 1);
+    document.getElementById('card2').classList.toggle('selected', n === 2);
+    // Re-render preview if name already entered
+    if (document.getElementById('empName').value.trim()) renderPreview();
+  }
+
+  function onNameChange() {
+    const name = document.getElementById('empName').value.trim();
+    document.getElementById('downloadBtn').disabled = !name || !selectedDesign;
+    if (name && selectedDesign) renderPreview();
+  }
+
+  function getConfig(n) {
+    return configs[n] || { x:50, y:50, fontSize:60, fontWeight:'600', color:'#ffffff', align:'center', shadowBlur:6 };
+  }
+
+  function renderPreview() {
+    if (!selectedDesign || !images[selectedDesign]) return;
+    const name = document.getElementById('empName').value.trim();
+    if (!name) return;
+
+    const img = images[selectedDesign];
+    const c   = getConfig(selectedDesign);
+
+    document.getElementById('previewWrap').style.display = 'flex';
+
+    const canvas = document.getElementById('preview');
+    const maxW   = document.querySelector('.name-form').clientWidth - 48;
+    const scale  = maxW / img.naturalWidth;
+    canvas.width  = Math.round(img.naturalWidth  * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    ctx.font         = `${c.fontWeight} ${Math.round(c.fontSize * scale)}px 'Beiruti', sans-serif`;
+    ctx.fillStyle    = c.color;
+    ctx.textAlign    = c.align;
+    ctx.textBaseline = 'middle';
+    if (c.shadowBlur > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.shadowBlur * scale; }
+    ctx.fillText(name, c.x * scale, c.y * scale);
+    ctx.shadowBlur = 0;
+  }
+
+  function downloadCard() {
+    const name = document.getElementById('empName').value.trim();
+    if (!name || !selectedDesign || !images[selectedDesign]) return;
+
+    const img = images[selectedDesign];
+    const c   = getConfig(selectedDesign);
+
+    const canvas = document.getElementById('hiresCanvas');
+    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    ctx.font         = `${c.fontWeight} ${c.fontSize}px 'Beiruti', sans-serif`;
+    ctx.fillStyle    = c.color;
+    ctx.textAlign    = c.align;
+    ctx.textBaseline = 'middle';
+    if (c.shadowBlur > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.shadowBlur; }
+    ctx.fillText(name, c.x, c.y);
+    ctx.shadowBlur = 0;
+
+    canvas.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `بطاقة-${name}.png`;
+      a.click();
+    }, 'image/png');
+  }
+</script>
+</body>
+</html>
