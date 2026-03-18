@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الإعداد | أصول</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Beiruti:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #f2f6ea;
+      --panel:   #ffffff;
+      --border:  #c8d8b0;
+      --primary: #4a5c34;
+      --accent:  #3d4e2a;
+      --text-1:  #2a3518;
+      --text-3:  #88a460;
+      --sep:     #e0eacc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Beiruti', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Lock ── */
+    #lockScreen {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #eef4e4, #f2f6ea);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+    }
+    .lock-box {
+      background: #fff; border: 1px solid var(--border); border-radius: 20px;
+      padding: 40px 36px; width: 320px; text-align: center;
+      box-shadow: 0 8px 32px rgba(74,92,52,0.12);
+    }
+    .lock-box img { height: 52px; margin-bottom: 14px; }
+    .lock-box .lock-icon { font-size: 2.2rem; margin-bottom: 8px; }
+    .lock-box h2 { font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    .lock-box p  { font-size: 0.8rem; color: var(--text-3); margin-bottom: 20px; }
+    #passwordInput {
+      width: 100%; padding: 11px 14px; font-family: 'Beiruti', sans-serif;
+      font-size: 1.1rem; text-align: center; border: 2px solid var(--border);
+      border-radius: 10px; background: #f8faf3; letter-spacing: 4px; margin-bottom: 10px;
+    }
+    #passwordInput:focus { outline: none; border-color: var(--primary); }
+    .btn-lock {
+      width: 100%; padding: 11px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-family: 'Beiruti', sans-serif;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+    }
+    .btn-lock:hover { filter: brightness(1.1); }
+    .lock-error { color: #c0392b; font-size: 0.8rem; margin-top: 8px; min-height: 18px; }
+
+    /* ── Header ── */
+    header {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 8px 20px; display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+    }
+    header img { height: 38px; }
+    #logoFallback { font-size: 1.3rem; font-weight: 900; color: var(--primary); display: none; }
+    .header-title h1 { font-size: 1.05rem; font-weight: 800; color: var(--primary); }
+    .header-title small { font-size: 0.68rem; color: var(--text-3); }
+    .header-link {
+      margin-right: auto; font-size: 0.78rem; color: var(--text-3);
+      text-decoration: none; padding: 5px 12px;
+      border: 1px solid var(--border); border-radius: 20px; transition: all 0.18s;
+    }
+    .header-link:hover { background: var(--bg); color: var(--primary); }
+
+    /* ── Layout ── */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Canvas ── */
+    .canvas-area {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 14px; overflow: hidden;
+    }
+    .placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-3); }
+    .placeholder .icon { font-size: 3.5rem; opacity: 0.3; }
+    .placeholder p { font-size: 0.88rem; }
+    #preview { max-width: 100%; max-height: 100%; border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(74,92,52,0.18); cursor: crosshair; display: none; }
+    .canvas-hint { font-size: 0.7rem; color: var(--text-3); margin-top: 6px; display: none; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 272px; flex-shrink: 0; background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* ── Design Tabs ── */
+    .design-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .dtab {
+      flex: 1; padding: 10px 6px; text-align: center; cursor: pointer;
+      font-family: 'Beiruti', sans-serif; font-size: 0.85rem; font-weight: 700;
+      background: #f8faf3; color: var(--text-3); border: none;
+      border-left: 1px solid var(--border); transition: all 0.18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .dtab:last-child { border-left: none; }
+    .dtab.active { background: var(--primary); color: #fff; }
+    .dtab .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: currentColor; opacity: 0.5; flex-shrink: 0;
+    }
+    .dtab.has-image .dot { opacity: 1; background: #6fcf97; }
+    .dtab.active.has-image .dot { background: #a8f0c0; }
+
+    /* ── Sidebar content ── */
+    .sidebar-inner { flex: 1; overflow-y: auto; padding: 14px; }
+
+    /* ── Controls ── */
+    .stitle {
+      font-size: 0.7rem; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.5px; margin: 12px 0 6px;
+    }
+    .stitle:first-child { margin-top: 0; }
+    .sep { height: 1px; background: var(--sep); margin: 10px 0; }
+
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: 8px; padding: 12px 10px;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      color: var(--text-3); font-size: 0.8rem; line-height: 1.6;
+    }
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--primary); background: #f0f6e8; color: var(--primary);
+    }
+    .upload-area .icon { font-size: 1.5rem; }
+    .upload-area.loaded { border-style: solid; border-color: #a8c080; background: #f4faea; }
+    .upload-area.loaded .icon { font-size: 1.2rem; }
+
+    .cg { margin-bottom: 7px; }
+    label { display: block; font-size: 0.72rem; color: var(--text-3); margin-bottom: 3px; }
+    input[type="text"], input[type="number"], input[type="color"], select {
+      width: 100%; padding: 6px 9px; background: #f8faf3;
+      border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text-1); font-family: 'Beiruti', sans-serif; font-size: 0.86rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    input[type="color"] { height: 32px; padding: 2px 4px; cursor: pointer; }
+    input[type="range"] { width: 100%; accent-color: var(--primary); }
+    .range-val { font-size: 0.68rem; color: var(--text-3); direction: ltr; text-align: left; }
+    .row-2 { display: flex; gap: 7px; }
+    .row-2 .cg { flex: 1; }
+
+    .btn {
+      width: 100%; padding: 9px; border: none; border-radius: 7px;
+      font-family: 'Beiruti', sans-serif; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: all 0.18s; margin-top: 6px;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 3px 12px rgba(74,92,52,0.3); }
+
+    .badge {
+      display: inline-block; font-size: 0.7rem; padding: 3px 10px; border-radius: 20px;
+      background: #dff0cc; color: #3a5220; border: 1px solid var(--border); margin-top: 5px;
+    }
+    .change-pw {
+      font-size: 0.73rem; color: var(--text-3); text-align: center;
+      margin-top: 4px; cursor: pointer; text-decoration: underline;
+    }
+    .change-pw:hover { color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<!-- Lock -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <img src="logo.png" alt="أصول" onerror="this.style.display='none'">
+    <div class="lock-icon">🔒</div>
+    <h2>لوحة الإعداد</h2>
+    <p>هذه الصفحة مخصصة للمسؤول فقط</p>
+    <input type="password" id="passwordInput" placeholder="كلمة المرور"
+           onkeydown="if(event.key==='Enter') checkPassword()">
+    <button class="btn-lock" onclick="checkPassword()">دخول</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <img src="logo.png" alt="أصول"
+       onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block'">
+  <span id="logoFallback">أصول</span>
+  <div class="header-title">
+    <h1>لوحة الإعداد</h1>
+    <small>إعداد بطاقتي المعايدة</small>
+  </div>
+  <a href="index.html" class="header-link">👁️ صفحة الموظفين</a>
+</header>
+
+<div class="layout">
+
+  <!-- Canvas Preview -->
+  <div class="canvas-area">
+    <div class="placeholder" id="placeholder">
+      <div class="icon">🖼️</div>
+      <p>ارفع تصميم البطاقة للبدء</p>
+    </div>
+    <canvas id="preview"></canvas>
+    <div class="canvas-hint" id="canvasHint">انقر على الصورة لتحديد موضع الاسم</div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <!-- Design selector tabs -->
+    <div class="design-tabs">
+      <button class="dtab active" id="dtab1" onclick="switchDesign(1)">
+        <span class="dot"></span> التصميم الأول
+      </button>
+      <button class="dtab" id="dtab2" onclick="switchDesign(2)">
+        <span class="dot"></span> التصميم الثاني
+      </button>
+    </div>
+
+    <div class="sidebar-inner">
+
+      <div class="stitle">الصورة</div>
+      <div class="upload-area" id="uploadArea" onclick="triggerUpload()">
+        <div class="icon" id="uploadIcon">🖼️</div>
+        <div id="uploadText">اسحب أو انقر لرفع الصورة</div>
+        <div style="font-size:0.68rem;">PNG · JPG · WEBP</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*">
+
+      <div class="sep"></div>
+
+      <div class="stitle">موضع الاسم</div>
+      <p style="font-size:0.72rem; color:var(--text-3); margin-bottom:7px;">
+        انقر على الصورة لتحديد الموضع
+      </p>
+      <div class="row-2">
+        <div class="cg"><label>X</label><input type="number" id="textX" value="50" min="0" oninput="renderPreview()"></div>
+        <div class="cg"><label>Y</label><input type="number" id="textY" value="50" min="0" oninput="renderPreview()"></div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="stitle">الخط</div>
+      <div class="cg">
+        <label>الحجم</label>
+        <input type="range" id="fontSize" min="10" max="300" value="60" oninput="updateFontSize()">
+        <div class="range-val" id="fontSizeVal">60px</div>
+      </div>
+      <div class="row-2">
+        <div class="cg">
+          <label>الوزن</label>
+          <select id="fontWeight" onchange="renderPreview()">
+            <option value="300">300</option><option value="400">400</option>
+            <option value="500">500</option><option value="600" selected>600</option>
+            <option value="700">700</option><option value="800">800</option><option value="900">900</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>المحاذاة</label>
+          <select id="textAlign" onchange="renderPreview()">
+            <option value="center" selected>وسط</option>
+            <option value="right">يمين</option>
+            <option value="left">يسار</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="cg"><label>اللون</label><input type="color" id="textColor" value="#ffffff" oninput="renderPreview()"></div>
+        <div class="cg"><label>الظل</label><input type="range" id="shadowBlur" min="0" max="30" value="6" oninput="renderPreview()" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="sep"></div>
+      <button class="btn btn-primary" onclick="saveConfig()">💾 حفظ التصميم <span id="saveLabel">الأول</span></button>
+      <div id="savedBadge" style="display:none; text-align:center;">
+        <span class="badge">✔ تم الحفظ — الموظفون يرون التصميم الآن</span>
+      </div>
+
+      <div class="sep"></div>
+      <div class="stitle">الأمان</div>
+      <div class="change-pw" onclick="changePassword()">🔑 تغيير كلمة المرور</div>
+    </div>
+  </div>
+</div>
+
+<canvas id="hiresCanvas" style="display:none;"></canvas>
+
+<script>
+  const DEFAULT_PW = 'osoul2025';
+  let activeDesign = 1;
+
+  // State for each design
+  const designs = {
+    1: { image: null, config: { x:50, y:50, fontSize:60, fontWeight:'600', color:'#ffffff', align:'center', shadowBlur:6 } },
+    2: { image: null, config: { x:50, y:50, fontSize:60, fontWeight:'600', color:'#ffffff', align:'center', shadowBlur:6 } }
+  };
+
+  /* ── Auth ── */
+  function checkPassword() {
+    const pw = document.getElementById('passwordInput').value;
+    const stored = localStorage.getItem('adminPassword') || DEFAULT_PW;
+    if (pw === stored) {
+      document.getElementById('lockScreen').style.display = 'none';
+      loadAllSaved();
+    } else {
+      document.getElementById('lockError').textContent = '❌ كلمة المرور غير صحيحة';
+      document.getElementById('passwordInput').value = '';
+      setTimeout(() => document.getElementById('lockError').textContent = '', 2500);
+    }
+  }
+
+  function changePassword() {
+    const np = prompt('أدخل كلمة المرور الجديدة:');
+    if (!np || np.trim().length < 4) { alert('يجب أن تكون 4 أحرف على الأقل'); return; }
+    if (np !== prompt('أعد الإدخال:')) { alert('كلمتا المرور غير متطابقتين'); return; }
+    localStorage.setItem('adminPassword', np);
+    alert('✔ تم تغيير كلمة المرور');
+  }
+
+  /* ── Load saved ── */
+  function loadAllSaved() {
+    [1, 2].forEach(n => {
+      const savedCfg = localStorage.getItem(`cardConfig${n}`);
+      const savedImg = localStorage.getItem(`cardImage${n}`);
+      if (savedCfg) { try { designs[n].config = { ...designs[n].config, ...JSON.parse(savedCfg) }; } catch(e){} }
+      if (savedImg) {
+        const img = new Image();
+        img.onload = () => {
+          designs[n].image = img;
+          updateTabDot(n);
+          if (n === activeDesign) { applyUIFromDesign(n); showCanvas(); renderPreview(); }
+        };
+        img.src = savedImg;
+      }
+    });
+    applyUIFromDesign(1);
+  }
+
+  /* ── Switch design tab ── */
+  function switchDesign(n) {
+    // Save current UI state to current design
+    readUIIntoConfig(activeDesign);
+    activeDesign = n;
+    document.querySelectorAll('.dtab').forEach((t, i) => t.classList.toggle('active', i + 1 === n));
+    document.getElementById('saveLabel').textContent = n === 1 ? 'الأول' : 'الثاني';
+    applyUIFromDesign(n);
+    if (designs[n].image) { showCanvas(); renderPreview(); }
+    else { hiddenCanvas(); }
+  }
+
+  function updateTabDot(n) {
+    document.getElementById(`dtab${n}`).classList.toggle('has-image', !!designs[n].image);
+  }
+
+  /* ── UI ↔ config sync ── */
+  function applyUIFromDesign(n) {
+    const c = designs[n].config;
+    document.getElementById('textX').value = c.x;
+    document.getElementById('textY').value = c.y;
+    document.getElementById('fontSize').value = c.fontSize;
+    document.getElementById('fontSizeVal').textContent = c.fontSize + 'px';
+    document.getElementById('fontWeight').value = c.fontWeight;
+    document.getElementById('textColor').value = c.color;
+    document.getElementById('textAlign').value = c.align;
+    document.getElementById('shadowBlur').value = c.shadowBlur;
+    // Upload area indicator
+    const ua = document.getElementById('uploadArea');
+    if (designs[n].image) {
+      ua.classList.add('loaded');
+      document.getElementById('uploadIcon').textContent = '✅';
+      document.getElementById('uploadText').textContent = 'تم رفع الصورة — انقر للتغيير';
+    } else {
+      ua.classList.remove('loaded');
+      document.getElementById('uploadIcon').textContent = '🖼️';
+      document.getElementById('uploadText').textContent = 'اسحب أو انقر لرفع الصورة';
+    }
+  }
+
+  function readUIIntoConfig(n) {
+    const c = designs[n].config;
+    c.x          = parseInt(document.getElementById('textX').value) || 50;
+    c.y          = parseInt(document.getElementById('textY').value) || 50;
+    c.fontSize   = parseInt(document.getElementById('fontSize').value) || 60;
+    c.fontWeight = document.getElementById('fontWeight').value;
+    c.color      = document.getElementById('textColor').value;
+    c.align      = document.getElementById('textAlign').value;
+    c.shadowBlur = parseInt(document.getElementById('shadowBlur').value);
+  }
+
+  /* ── Upload ── */
+  function triggerUpload() { document.getElementById('fileInput').click(); }
+
+  document.getElementById('fileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        designs[activeDesign].image = img;
+        localStorage.setItem(`cardImage${activeDesign}`, ev.target.result);
+        updateTabDot(activeDesign);
+        applyUIFromDesign(activeDesign);
+        showCanvas();
+        renderPreview();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  const ua = document.getElementById('uploadArea');
+  ua.addEventListener('dragover', e => { e.preventDefault(); ua.classList.add('drag-over'); });
+  ua.addEventListener('dragleave', () => ua.classList.remove('drag-over'));
+  ua.addEventListener('drop', e => {
+    e.preventDefault(); ua.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dt = new DataTransfer(); dt.items.add(file);
+      document.getElementById('fileInput').files = dt.files;
+      document.getElementById('fileInput').dispatchEvent(new Event('change'));
+    }
+  });
+
+  /* ── Click canvas → position ── */
+  document.getElementById('preview').addEventListener('click', function(e) {
+    const img = designs[activeDesign].image;
+    if (!img) return;
+    const rect = this.getBoundingClientRect();
+    const x = Math.round((e.clientX - rect.left) * (img.naturalWidth  / rect.width));
+    const y = Math.round((e.clientY - rect.top)  * (img.naturalHeight / rect.height));
+    document.getElementById('textX').value = x;
+    document.getElementById('textY').value = y;
+    designs[activeDesign].config.x = x;
+    designs[activeDesign].config.y = y;
+    renderPreview();
+  });
+
+  /* ── Render ── */
+  function renderPreview() {
+    readUIIntoConfig(activeDesign);
+    const img = designs[activeDesign].image;
+    if (!img) return;
+    const c = designs[activeDesign].config;
+
+    const canvas = document.getElementById('preview');
+    const area = canvas.parentElement;
+    const maxW = area.clientWidth - 32, maxH = area.clientHeight - 50;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    let w = maxW, h = maxW / ratio;
+    if (h > maxH) { h = maxH; w = maxH * ratio; }
+    canvas.width = Math.round(w); canvas.height = Math.round(h);
+    const scale = w / img.naturalWidth;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    ctx.font = `${c.fontWeight} ${Math.round(c.fontSize * scale)}px 'Beiruti', sans-serif`;
+    ctx.fillStyle = c.color; ctx.textAlign = c.align; ctx.textBaseline = 'middle';
+    if (c.shadowBlur > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.shadowBlur * scale; }
+    ctx.fillText('اسم الموظف', c.x * scale, c.y * scale);
+    ctx.shadowBlur = 0;
+  }
+
+  function updateFontSize() {
+    document.getElementById('fontSizeVal').textContent = document.getElementById('fontSize').value + 'px';
+    renderPreview();
+  }
+
+  function showCanvas() {
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('preview').style.display = 'block';
+    document.getElementById('canvasHint').style.display = 'block';
+  }
+
+  function hiddenCanvas() {
+    document.getElementById('placeholder').style.display = 'flex';
+    document.getElementById('preview').style.display = 'none';
+    document.getElementById('canvasHint').style.display = 'none';
+  }
+
+  /* ── Save ── */
+  function saveConfig() {
+    readUIIntoConfig(activeDesign);
+    localStorage.setItem(`cardConfig${activeDesign}`, JSON.stringify(designs[activeDesign].config));
+    document.getElementById('savedBadge').style.display = 'block';
+    setTimeout(() => document.getElementById('savedBadge').style.display = 'none', 3000);
+  }
+
+  window.addEventListener('resize', () => { if (designs[activeDesign].image) renderPreview(); });
+</script>
+</body>
+</html>
