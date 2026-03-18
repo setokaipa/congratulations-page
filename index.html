@@ -2,91 +2,187 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>بطاقة المعايدة | أصول</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Beiruti:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    /* ══════════════════════════════════════
+       VARIABLES & RESET
+    ══════════════════════════════════════ */
     :root {
-      --bg:      #f2f6ea;
-      --panel:   #ffffff;
-      --border:  #c8d8b0;
-      --primary: #4a5c34;
-      --accent:  #3d4e2a;
-      --text-1:  #2a3518;
-      --text-3:  #88a460;
-      --gold:    #b8941e;
+      --bg:       #f2f6ea;
+      --panel:    #ffffff;
+      --border:   #c8d8b0;
+      --border2:  #a8c080;
+      --primary:  #4a5c34;
+      --dark:     #3d4e2a;
+      --text-1:   #2a3518;
+      --text-3:   #88a460;
+      --sep:      #e0eacc;
+      --gold:     #b8941e;
+      --gold2:    #9a7c10;
+      --shadow:   rgba(74,92,52,0.15);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
     body {
       font-family: 'Beiruti', sans-serif;
       background: var(--bg);
       color: var(--text-1);
       min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    img { max-width: 100%; display: block; }
+    button { cursor: pointer; font-family: 'Beiruti', sans-serif; }
+
+    /* ══════════════════════════════════════
+       SCREENS — only active screen visible
+    ══════════════════════════════════════ */
+    .screen { display: none; flex-direction: column; flex: 1; }
+    .screen.active { display: flex; }
+
+    /* ══════════════════════════════════════
+       HEADER (shared)
+    ══════════════════════════════════════ */
+    .top-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .top-bar img.logo { height: 46px; width: auto; }
+    .top-bar .logo-text { font-size: 1.3rem; font-weight: 900; color: var(--primary); display: none; }
+    .top-bar .title-wrap h1 { font-size: clamp(0.95rem, 2.5vw, 1.15rem); font-weight: 800; color: var(--primary); line-height: 1.1; }
+    .top-bar .title-wrap small { font-size: clamp(0.65rem, 1.8vw, 0.72rem); color: var(--text-3); }
+    .top-bar .back-btn {
+      margin-right: auto;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      color: var(--text-3);
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .top-bar .back-btn:hover { background: var(--bg); color: var(--primary); }
+
+    /* ══════════════════════════════════════
+       SCREEN 1 — HOME
+    ══════════════════════════════════════ */
+    #homeScreen {
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      gap: 0;
+    }
+    .home-inner {
+      width: 100%;
+      max-width: 560px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 28px;
     }
-
-    /* ── Header ── */
-    header {
-      width: 100%;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 24px;
+    .home-logo {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 14px;
     }
-    header img { height: 44px; }
-    #logoFallback { font-size: 1.5rem; font-weight: 900; color: var(--primary); display: none; }
-    .header-title h1 { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-    .header-title small { font-size: 0.72rem; color: var(--text-3); }
-
-    /* ── Wrapper ── */
-    .wrapper {
+    .home-logo img {
+      width: clamp(180px, 48vw, 300px);
+      height: auto;
+      filter: drop-shadow(0 4px 16px rgba(74,92,52,0.18));
+    }
+    .home-logo .brand {
+      font-size: clamp(2rem, 8vw, 3rem);
+      font-weight: 900;
+      color: var(--primary);
+      display: none;
+      letter-spacing: 2px;
+    }
+    .home-logo .divider {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--border2));
+      border-radius: 2px;
+      margin: 2px 0;
+    }
+    .home-logo p {
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      color: var(--text-3);
+      text-align: center;
+      font-weight: 500;
+    }
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
       width: 100%;
-      max-width: 680px;
-      padding: 28px 16px 40px;
+    }
+    .role-card {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(20px, 5vw, 32px) 16px;
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
+      transition: all 0.22s;
+      border-width: 2px;
+    }
+    .role-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 6px 24px var(--shadow);
+      transform: translateY(-3px);
+    }
+    .role-card .emoji { font-size: clamp(2rem, 6vw, 2.8rem); }
+    .role-card h3 { font-size: clamp(1rem, 3.5vw, 1.25rem); font-weight: 800; color: var(--primary); }
+    .role-card p { font-size: clamp(0.72rem, 2vw, 0.82rem); color: var(--text-3); line-height: 1.5; }
+    .role-card.emp { border-color: var(--border2); }
+    .role-card.emp:hover { background: #f6faf0; }
+    .role-card.adm:hover { background: #fafaf6; }
+
+    /* ══════════════════════════════════════
+       SCREEN 2 — EMPLOYEE
+    ══════════════════════════════════════ */
+    #empScreen { overflow-y: auto; }
+    .emp-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(16px, 4vw, 32px) clamp(12px, 4vw, 24px) 40px;
       gap: 20px;
-    }
-
-    /* ── No card message ── */
-    .no-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 60px 24px;
-      text-align: center;
-      color: var(--text-3);
-      font-size: 1rem;
-      line-height: 2.2;
       width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
     }
-
-    /* ── Step label ── */
-    .step-label {
+    .step-title {
       align-self: flex-start;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--text-3);
+      letter-spacing: 0.6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
-
-    /* ── Design chooser ── */
+    /* Design chooser */
     .designs-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: clamp(10px, 3vw, 18px);
       width: 100%;
     }
-
-    .design-card {
+    .d-card {
       background: var(--panel);
       border: 2px solid var(--border);
       border-radius: 14px;
@@ -95,77 +191,43 @@
       transition: all 0.2s;
       position: relative;
     }
-
-    .design-card:hover {
-      border-color: var(--primary);
-      box-shadow: 0 4px 16px rgba(74,92,52,0.15);
-      transform: translateY(-2px);
-    }
-
-    .design-card.selected {
-      border-color: var(--primary);
-      box-shadow: 0 4px 20px rgba(74,92,52,0.25);
-    }
-
-    .design-card.selected::after {
+    .d-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 16px var(--shadow); }
+    .d-card.selected { border-color: var(--primary); box-shadow: 0 4px 20px var(--shadow); }
+    .d-card.selected::after {
       content: '✓';
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      width: 26px; height: 26px;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
+      position: absolute; top: 8px; left: 8px;
+      width: 24px; height: 24px;
+      background: var(--primary); color: #fff;
+      border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 800;
     }
-
-    .design-card img {
-      width: 100%;
-      display: block;
-      border-radius: 10px;
-    }
-
-    .design-card .card-label {
-      padding: 8px 12px;
-      font-size: 0.82rem;
+    .d-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+    .d-card .d-label {
+      padding: 7px 10px;
+      font-size: clamp(0.75rem, 2.2vw, 0.85rem);
       font-weight: 600;
-      color: var(--text-1);
       text-align: center;
       border-top: 1px solid var(--border);
       background: #fafcf6;
+      color: var(--text-1);
     }
-
-    .design-card.selected .card-label {
-      background: #eef6e0;
-      color: var(--primary);
-    }
-
-    /* ── Name form ── */
-    .name-form {
+    .d-card.selected .d-label { background: #eef6e0; color: var(--primary); }
+    /* Name form */
+    .name-box {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 22px 24px;
+      padding: clamp(16px, 4vw, 24px);
       width: 100%;
-      box-shadow: 0 3px 14px rgba(74,92,52,0.08);
+      box-shadow: 0 3px 14px var(--shadow);
     }
-
-    .form-label {
-      font-size: 0.82rem;
-      color: var(--text-3);
-      margin-bottom: 8px;
-      display: block;
-    }
-
+    .form-label { font-size: 0.8rem; color: var(--text-3); margin-bottom: 8px; display: block; }
     #empName {
       width: 100%;
-      padding: 12px 16px;
+      padding: clamp(10px, 2.5vw, 13px) 16px;
       font-family: 'Beiruti', sans-serif;
-      font-size: 1.3rem;
+      font-size: clamp(1.1rem, 4vw, 1.3rem);
       font-weight: 600;
       text-align: center;
       border: 2px solid var(--border);
@@ -175,224 +237,771 @@
       transition: border-color 0.2s;
     }
     #empName:focus { outline: none; border-color: var(--primary); }
+    .preview-wrap { margin-top: 14px; border-radius: 10px; overflow: hidden; display: none; }
+    #preview { width: 100%; display: block; border-radius: 10px; box-shadow: 0 4px 16px var(--shadow); }
 
-    /* ── Preview ── */
-    .preview-wrap {
-      margin-top: 16px;
-      border-radius: 10px;
+    /* ══════════════════════════════════════
+       SCREEN 3 — ADMIN
+    ══════════════════════════════════════ */
+    #adminScreen { position: relative; overflow: hidden; }
+
+    /* Lock overlay */
+    #lockOverlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, #eef4e4, #f2f6ea);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+      padding: 20px;
+    }
+    .lock-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: clamp(28px, 6vw, 44px) clamp(24px, 6vw, 40px);
+      width: 100%;
+      max-width: 340px;
+      text-align: center;
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+    .lock-box img { width: 130px; height: auto; margin: 0 auto 14px; }
+    .lock-box .lock-icon { font-size: 2rem; margin-bottom: 8px; }
+    .lock-box h2 { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    .lock-box p { font-size: 0.78rem; color: var(--text-3); margin-bottom: 18px; }
+    #pwInput {
+      width: 100%; padding: 11px 14px;
+      font-family: 'Beiruti', sans-serif; font-size: 1.05rem;
+      text-align: center; border: 2px solid var(--border);
+      border-radius: 10px; background: #f8faf3;
+      letter-spacing: 4px; margin-bottom: 10px;
+    }
+    #pwInput:focus { outline: none; border-color: var(--primary); }
+    .lock-error { color: #c0392b; font-size: 0.78rem; margin-top: 7px; min-height: 18px; }
+
+    /* Admin content */
+    .admin-content {
+      flex: 1;
+      display: flex;
       overflow: hidden;
-      background: #f0f4e8;
-      display: none;
+    }
+
+    /* Canvas side */
+    .admin-canvas {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-    }
-    #preview { max-width: 100%; display: block; border-radius: 10px; }
-
-    /* ── Buttons ── */
-    .btn {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Beiruti', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.18s;
-      margin-top: 10px;
-    }
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), #9a7c10);
-      color: #fff;
-    }
-    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(184,148,30,0.35); }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    footer {
-      margin-top: auto;
       padding: 14px;
-      font-size: 0.72rem;
-      color: var(--text-3);
-      text-align: center;
+      overflow: hidden;
+      min-height: 200px;
     }
+    .canvas-ph {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px; color: var(--text-3);
+    }
+    .canvas-ph .ph-icon { font-size: clamp(2.5rem, 8vw, 3.5rem); opacity: 0.3; }
+    .canvas-ph p { font-size: 0.85rem; }
+    #adminCanvas {
+      max-width: 100%; max-height: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 24px var(--shadow);
+      cursor: crosshair; display: none;
+    }
+    .canvas-hint { font-size: 0.7rem; color: var(--text-3); margin-top: 6px; display: none; }
+
+    /* Settings sidebar */
+    .admin-sidebar {
+      width: clamp(240px, 30vw, 280px);
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Design tabs inside sidebar */
+    .design-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .dtab {
+      flex: 1; padding: 9px 4px; text-align: center;
+      font-size: clamp(0.75rem, 2vw, 0.85rem); font-weight: 700;
+      background: #f8faf3; color: var(--text-3);
+      border: none; border-left: 1px solid var(--border);
+      transition: all 0.18s; display: flex;
+      align-items: center; justify-content: center; gap: 5px;
+    }
+    .dtab:last-child { border-left: none; }
+    .dtab.active { background: var(--primary); color: #fff; }
+    .dtab .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.4; flex-shrink: 0; }
+    .dtab.has-img .dot { opacity: 1; background: #6fcf97; }
+    .dtab.active.has-img .dot { background: #a8f0c0; }
+
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 12px 14px; }
+
+    .stitle {
+      font-size: 0.68rem; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.5px; margin: 12px 0 6px;
+    }
+    .stitle:first-child { margin-top: 0; }
+    .sep { height: 1px; background: var(--sep); margin: 9px 0; }
+
+    .upload-area {
+      border: 2px dashed var(--border); border-radius: 8px;
+      padding: 11px 8px; text-align: center; cursor: pointer;
+      transition: all 0.2s; color: var(--text-3);
+      font-size: clamp(0.72rem, 2vw, 0.8rem); line-height: 1.5;
+    }
+    .upload-area:hover, .upload-area.drag-over { border-color: var(--primary); background: #f0f6e8; color: var(--primary); }
+    .upload-area.loaded { border-style: solid; border-color: var(--border2); background: #f4faea; }
+    .upload-area .u-icon { font-size: 1.4rem; }
+    #fileInput { display: none; }
+
+    .cg { margin-bottom: 7px; }
+    label { display: block; font-size: 0.7rem; color: var(--text-3); margin-bottom: 3px; }
+    input[type="text"], input[type="number"], input[type="color"], select {
+      width: 100%; padding: 5px 8px; background: #f8faf3;
+      border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text-1); font-family: 'Beiruti', sans-serif;
+      font-size: clamp(0.8rem, 2vw, 0.86rem);
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    input[type="color"] { height: 30px; padding: 2px 4px; cursor: pointer; }
+    input[type="range"] { width: 100%; accent-color: var(--primary); }
+    .range-val { font-size: 0.65rem; color: var(--text-3); direction: ltr; text-align: left; }
+    .row-2 { display: flex; gap: 7px; }
+    .row-2 .cg { flex: 1; }
+
+    /* ══════════════════════════════════════
+       BUTTONS (shared)
+    ══════════════════════════════════════ */
+    .btn {
+      width: 100%; padding: clamp(9px, 2.5vw, 12px);
+      border: none; border-radius: 10px;
+      font-family: 'Beiruti', sans-serif;
+      font-size: clamp(0.9rem, 2.8vw, 1.05rem); font-weight: 700;
+      transition: all 0.18s; margin-top: 7px;
+    }
+    .btn-green { background: linear-gradient(135deg, var(--primary), var(--dark)); color: #fff; }
+    .btn-green:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 3px 12px rgba(74,92,52,0.3); }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #fff; }
+    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 3px 12px rgba(184,148,30,0.35); }
+    .btn-lock-in { background: linear-gradient(135deg, var(--primary), var(--dark)); color: #fff; border: none; width: 100%; padding: 11px; border-radius: 10px; font-family: 'Beiruti', sans-serif; font-size: 1rem; font-weight: 700; }
+    .btn-lock-in:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    .badge {
+      display: inline-block; font-size: 0.68rem; padding: 3px 10px;
+      border-radius: 20px; background: #dff0cc; color: #3a5220;
+      border: 1px solid var(--border2); margin-top: 5px;
+    }
+    .change-pw { font-size: 0.72rem; color: var(--text-3); text-align: center; margin-top: 4px; cursor: pointer; text-decoration: underline; }
+    .change-pw:hover { color: var(--primary); }
+
+    /* ══════════════════════════════════════
+       MOBILE: Admin layout stacks vertically
+    ══════════════════════════════════════ */
+    @media (max-width: 640px) {
+      .admin-content { flex-direction: column-reverse; overflow-y: auto; }
+      .admin-sidebar { width: 100%; border-right: none; border-top: 1px solid var(--border); max-height: 55vh; }
+      .admin-canvas { min-height: 160px; padding: 10px; flex: 0 0 auto; }
+      #adminCanvas { max-height: 38vw; }
+
+      /* Employee: single col on very small screens */
+      .designs-grid { gap: 10px; }
+      .role-grid { gap: 12px; }
+      .role-card { padding: 18px 12px; }
+    }
+
+    @media (max-width: 360px) {
+      .designs-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ══════════════════════════════════════
+       TABLET: slightly narrower sidebar
+    ══════════════════════════════════════ */
+    @media (min-width: 641px) and (max-width: 960px) {
+      .admin-sidebar { width: 230px; }
+    }
+
+    /* ══════════════════════════════════════
+       NO CARD STATE
+    ══════════════════════════════════════ */
+    .no-card-msg {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 16px; padding: 50px 24px;
+      text-align: center; color: var(--text-3);
+      font-size: 1rem; line-height: 2.2; width: 100%;
+    }
+
+    footer { padding: 12px; font-size: 0.7rem; color: var(--text-3); text-align: center; flex-shrink: 0; }
   </style>
 </head>
 <body>
 
-<header>
-  <img src="logo.png" alt="أصول"
-       onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block'">
-  <span id="logoFallback">أصول</span>
-  <div class="header-title">
-    <h1>بطاقة المعايدة</h1>
-    <small>أضف اسمك واحصل على بطاقتك الخاصة</small>
-  </div>
-</header>
+<!-- ══════════════════════════════════════
+     SCREEN 1: HOME
+══════════════════════════════════════ -->
+<div id="homeScreen" class="screen active">
+  <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:20px 16px;">
+    <div class="home-inner">
 
-<div class="wrapper">
-
-  <!-- No card fallback -->
-  <div id="noCardMsg" class="no-card" style="display:none;">
-    🎴<br>لم يتم إعداد البطاقة بعد.<br>
-    <span style="font-size:0.85rem;">يرجى التواصل مع المسؤول.</span>
-  </div>
-
-  <!-- Step 1: Choose design -->
-  <div id="step1" style="display:none; width:100%;">
-    <div class="step-label">الخطوة 1 — اختر تصميم البطاقة</div>
-    <div class="designs-grid" style="margin-top:10px;">
-      <div class="design-card" id="card1" onclick="selectDesign(1)">
-        <img id="thumb1" src="" alt="التصميم الأول">
-        <div class="card-label">التصميم الأول</div>
+      <div class="home-logo">
+        <img src="logo.png" alt="أصول"
+             onerror="this.style.display='none'; document.querySelector('.home-logo .brand').style.display='block'">
+        <span class="brand">أصول</span>
+        <div class="divider"></div>
+        <p>بطاقة المعايدة — اختر طريقة الدخول</p>
       </div>
-      <div class="design-card" id="card2" onclick="selectDesign(2)">
-        <img id="thumb2" src="" alt="التصميم الثاني">
-        <div class="card-label">التصميم الثاني</div>
+
+      <div class="role-grid">
+        <button class="role-card emp" onclick="goEmployee()">
+          <span class="emoji">👤</span>
+          <h3>موظف</h3>
+          <p>أدخل اسمك واحصل على بطاقة معايدة خاصة بك</p>
+        </button>
+        <button class="role-card adm" onclick="goAdmin()">
+          <span class="emoji">⚙️</span>
+          <h3>مسؤول</h3>
+          <p>إعداد التصاميم وضبط إعدادات البطاقة</p>
+        </button>
       </div>
+
     </div>
   </div>
-
-  <!-- Step 2: Enter name -->
-  <div id="step2" style="display:none; width:100%;">
-    <div class="step-label">الخطوة 2 — أدخل اسمك</div>
-    <div class="name-form" style="margin-top:10px;">
-      <label class="form-label">الاسم الكامل</label>
-      <input type="text" id="empName" placeholder="اكتب اسمك هنا..." oninput="onNameChange()">
-
-      <div class="preview-wrap" id="previewWrap">
-        <canvas id="preview"></canvas>
-      </div>
-
-      <button class="btn btn-gold" id="downloadBtn" onclick="downloadCard()" disabled>
-        ⬇️ تحميل بطاقتي
-      </button>
-    </div>
-  </div>
-
+  <footer>أصول &copy; 2025</footer>
 </div>
 
-<footer>أصول &copy; 2025</footer>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: EMPLOYEE
+══════════════════════════════════════ -->
+<div id="empScreen" class="screen">
+
+  <div class="top-bar">
+    <img class="logo" src="logo.png" alt="أصول"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <span class="logo-text">أصول</span>
+    <div class="title-wrap">
+      <small style="font-size:clamp(0.7rem,2vw,0.82rem); color:var(--text-3);">أضف اسمك واحصل على بطاقتك</small>
+    </div>
+    <button class="back-btn" onclick="goHome()">← الرئيسية</button>
+  </div>
+
+  <div class="emp-body">
+
+    <div id="empNoCard" class="no-card-msg" style="display:none;">
+      🎴<br>لم يتم إعداد البطاقة بعد.<br>
+      <span style="font-size:0.85rem;">يرجى التواصل مع المسؤول.</span>
+    </div>
+
+    <!-- Step 1: choose design -->
+    <div id="empStep1" style="display:none; width:100%;">
+      <div class="step-title">الخطوة ١ — اختر تصميم البطاقة</div>
+      <div class="designs-grid" style="margin-top:10px;">
+        <div class="d-card" id="dcard1" onclick="selectDesign(1)">
+          <img id="dthumb1" src="" alt="التصميم الأول">
+          <div class="d-label">التصميم الأول</div>
+        </div>
+        <div class="d-card" id="dcard2" onclick="selectDesign(2)">
+          <img id="dthumb2" src="" alt="التصميم الثاني">
+          <div class="d-label">التصميم الثاني</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: enter name -->
+    <div id="empStep2" style="display:none; width:100%;">
+      <div class="step-title" id="step2Label">الخطوة ٢ — أدخل اسمك</div>
+      <div class="name-box" style="margin-top:10px;">
+        <label class="form-label">الاسم الكامل</label>
+        <input type="text" id="empName" placeholder="اكتب اسمك هنا..."
+               oninput="onNameChange()" autocomplete="off">
+        <div class="preview-wrap" id="previewWrap">
+          <canvas id="preview"></canvas>
+        </div>
+        <button class="btn btn-gold" id="downloadBtn" onclick="downloadCard()" disabled>
+          ⬇️ تحميل بطاقتي
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: ADMIN
+══════════════════════════════════════ -->
+<div id="adminScreen" class="screen">
+
+  <!-- Lock overlay -->
+  <div id="lockOverlay">
+    <div class="lock-box">
+      <img src="logo.png" alt="أصول" onerror="this.style.display='none'">
+      <div class="lock-icon">🔒</div>
+      <h2>لوحة الإعداد</h2>
+      <p>هذه الصفحة مخصصة للمسؤول فقط</p>
+      <input type="password" id="pwInput" placeholder="كلمة المرور"
+             onkeydown="if(event.key==='Enter') checkPw()">
+      <button class="btn-lock-in" onclick="checkPw()" style="margin-top:4px;">دخول</button>
+      <div class="lock-error" id="lockErr"></div>
+    </div>
+  </div>
+
+  <!-- Admin top bar -->
+  <div class="top-bar">
+    <img class="logo" src="logo.png" alt="أصول"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <span class="logo-text">أصول</span>
+    <div class="title-wrap">
+      <h1>لوحة الإعداد</h1>
+      <small>إعداد بطاقتي المعايدة</small>
+    </div>
+    <button class="back-btn" onclick="goHome()">← الرئيسية</button>
+  </div>
+
+  <!-- Admin body -->
+  <div class="admin-content">
+
+    <!-- Canvas preview -->
+    <div class="admin-canvas">
+      <div class="canvas-ph" id="adminPh">
+        <div class="ph-icon">🖼️</div>
+        <p>ارفع تصميم البطاقة للبدء</p>
+      </div>
+      <canvas id="adminCanvas"></canvas>
+      <div class="canvas-hint" id="adminHint">انقر على الصورة لتحديد موضع الاسم</div>
+    </div>
+
+    <!-- Settings sidebar -->
+    <div class="admin-sidebar">
+
+      <div class="design-tabs">
+        <button class="dtab active" id="dtab1" onclick="switchDesign(1)">
+          <span class="dot"></span> الأول
+        </button>
+        <button class="dtab" id="dtab2" onclick="switchDesign(2)">
+          <span class="dot"></span> الثاني
+        </button>
+      </div>
+
+      <div class="sidebar-scroll">
+
+        <div class="stitle">الصورة</div>
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+          <div class="u-icon" id="uIcon">🖼️</div>
+          <div id="uText">اسحب أو انقر لرفع الصورة</div>
+          <div style="font-size:0.65rem; color:var(--text-3);">PNG · JPG · WEBP</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*">
+
+        <div class="sep"></div>
+
+        <div class="stitle">موضع الاسم</div>
+        <p style="font-size:0.7rem; color:var(--text-3); margin-bottom:6px;">انقر على الصورة لتحديد الموضع</p>
+        <div class="row-2">
+          <div class="cg"><label>X</label><input type="number" id="aX" value="50" min="0" oninput="adminRender()"></div>
+          <div class="cg"><label>Y</label><input type="number" id="aY" value="50" min="0" oninput="adminRender()"></div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="stitle">الخط</div>
+        <div class="cg">
+          <label>الحجم</label>
+          <input type="range" id="aSize" min="10" max="300" value="60" oninput="updateSize()">
+          <div class="range-val" id="aSizeVal">60px</div>
+        </div>
+        <div class="row-2">
+          <div class="cg">
+            <label>الوزن</label>
+            <select id="aWeight" onchange="adminRender()">
+              <option value="300">300</option><option value="400">400</option>
+              <option value="500">500</option><option value="600" selected>600</option>
+              <option value="700">700</option><option value="800">800</option><option value="900">900</option>
+            </select>
+          </div>
+          <div class="cg">
+            <label>المحاذاة</label>
+            <select id="aAlign" onchange="adminRender()">
+              <option value="center" selected>وسط</option>
+              <option value="right">يمين</option>
+              <option value="left">يسار</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="cg"><label>اللون</label><input type="color" id="aColor" value="#ffffff" oninput="adminRender()"></div>
+          <div class="cg"><label>ظل</label><input type="range" id="aShadow" min="0" max="30" value="6" oninput="adminRender()" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="sep"></div>
+        <button class="btn btn-green" onclick="saveDesign()">
+          💾 حفظ التصميم <span id="saveNum">الأول</span>
+        </button>
+        <div id="savedBadge" style="display:none; text-align:center; margin-top:4px;">
+          <span class="badge">✔ تم الحفظ</span>
+        </div>
+
+        <div class="sep"></div>
+        <div class="stitle">الأمان</div>
+        <div class="change-pw" onclick="changePw()">🔑 تغيير كلمة المرور</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <canvas id="hiresCanvas" style="display:none;"></canvas>
 
 <script>
-  const images = { 1: null, 2: null };
-  const configs = { 1: null, 2: null };
-  let selectedDesign = null;
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const DESIGNS = {
+  1: { img: null, cfg: { x:50, y:50, sz:60, w:'600', clr:'#ffffff', al:'center', sh:6 } },
+  2: { img: null, cfg: { x:50, y:50, sz:60, w:'600', clr:'#ffffff', al:'center', sh:6 } }
+};
+let activeDesign = 1;
+let selectedEmpDesign = null;
+const DEFAULT_PW = 'osoul2025';
 
-  (function init() {
-    let available = 0;
+/* ════════════════════════════════
+   NAVIGATION
+════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // scroll to top
+  document.getElementById(id).scrollTop = 0;
+}
 
-    [1, 2].forEach(n => {
-      const img = localStorage.getItem(`cardImage${n}`);
-      const cfg = localStorage.getItem(`cardConfig${n}`);
-      if (img) {
-        const el = new Image();
-        el.onload = () => {
-          images[n] = el;
-          document.getElementById(`thumb${n}`).src = img;
-          available++;
-          if (available === 1) checkAvailability();
-        };
-        el.src = img;
-      }
-      if (cfg) { try { configs[n] = JSON.parse(cfg); } catch(e){} }
-    });
+function goHome() { showScreen('homeScreen'); }
 
-    // If neither loaded after a tick
-    setTimeout(checkAvailability, 300);
-  })();
+function goEmployee() {
+  loadSavedImages();
+  showScreen('empScreen');
+  setupEmpView();
+}
 
-  function checkAvailability() {
-    const has1 = !!images[1], has2 = !!images[2];
-    if (!has1 && !has2) {
-      document.getElementById('noCardMsg').style.display = 'block';
-      return;
+function goAdmin() {
+  showScreen('adminScreen');
+  document.getElementById('lockOverlay').style.display = 'flex';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('lockErr').textContent = '';
+}
+
+/* ════════════════════════════════
+   LOAD SAVED DATA
+════════════════════════════════ */
+function loadSavedImages() {
+  [1, 2].forEach(n => {
+    if (DESIGNS[n].img) return; // already loaded
+    const imgData = localStorage.getItem('cardImage' + n);
+    const cfgData = localStorage.getItem('cardConfig' + n);
+    if (cfgData) { try { DESIGNS[n].cfg = {...DESIGNS[n].cfg, ...JSON.parse(cfgData)}; } catch(e){} }
+    if (imgData) {
+      const img = new Image();
+      img.onload = () => {
+        DESIGNS[n].img = img;
+        updateAfterLoad(n);
+      };
+      img.src = imgData;
     }
-    // If only one design exists, skip chooser and auto-select
-    if (has1 && !has2) { autoSelect(1); return; }
-    if (!has1 && has2) { autoSelect(2); return; }
-    // Both available: show chooser
-    document.getElementById('step1').style.display = 'block';
-    document.getElementById('step2').style.display = 'block';
+  });
+}
+
+function updateAfterLoad(n) {
+  // update admin tab dot
+  const tab = document.getElementById('dtab' + n);
+  if (tab) tab.classList.toggle('has-img', !!DESIGNS[n].img);
+  // update employee thumb
+  const thumb = document.getElementById('dthumb' + n);
+  if (thumb && DESIGNS[n].img) thumb.src = DESIGNS[n].img.src;
+  // re-setup employee view if on emp screen
+  if (document.getElementById('empScreen').classList.contains('active')) {
+    setupEmpView();
+  }
+}
+
+/* ════════════════════════════════
+   EMPLOYEE FLOW
+════════════════════════════════ */
+function setupEmpView() {
+  const has1 = !!DESIGNS[1].img, has2 = !!DESIGNS[2].img;
+
+  document.getElementById('empNoCard').style.display   = (!has1 && !has2) ? 'block' : 'none';
+  document.getElementById('empStep1').style.display    = 'none';
+  document.getElementById('empStep2').style.display    = 'none';
+
+  if (!has1 && !has2) return;
+
+  if (has1 && has2) {
+    // show design chooser + name form
+    document.getElementById('dthumb1').src = DESIGNS[1].img.src;
+    document.getElementById('dthumb2').src = DESIGNS[2].img.src;
+    document.getElementById('empStep1').style.display = 'block';
+    document.getElementById('step2Label').textContent = 'الخطوة ٢ — أدخل اسمك';
+  } else {
+    // only one design, skip chooser
+    selectedEmpDesign = has1 ? 1 : 2;
+    document.getElementById('step2Label').textContent = 'أدخل اسمك';
   }
 
-  function autoSelect(n) {
-    document.getElementById('step2').style.display = 'block';
-    selectedDesign = n;
+  document.getElementById('empStep2').style.display = 'block';
+  document.getElementById('empName').value = '';
+  document.getElementById('downloadBtn').disabled = true;
+  document.getElementById('previewWrap').style.display = 'none';
+}
+
+function selectDesign(n) {
+  if (!DESIGNS[n].img) return;
+  selectedEmpDesign = n;
+  document.getElementById('dcard1').classList.toggle('selected', n === 1);
+  document.getElementById('dcard2').classList.toggle('selected', n === 2);
+  const name = document.getElementById('empName').value.trim();
+  if (name) empRender();
+}
+
+function onNameChange() {
+  const name = document.getElementById('empName').value.trim();
+  document.getElementById('downloadBtn').disabled = !name || !selectedEmpDesign;
+  if (name && selectedEmpDesign) empRender();
+  else document.getElementById('previewWrap').style.display = 'none';
+}
+
+function empRender() {
+  const img = DESIGNS[selectedEmpDesign].img;
+  const c   = DESIGNS[selectedEmpDesign].cfg;
+  const name = document.getElementById('empName').value.trim();
+  if (!img || !name) return;
+
+  document.getElementById('previewWrap').style.display = 'block';
+  const canvas = document.getElementById('preview');
+  const maxW = document.querySelector('.name-box').clientWidth - (window.innerWidth < 640 ? 32 : 48);
+  const scale = maxW / img.naturalWidth;
+  canvas.width  = Math.round(img.naturalWidth  * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+
+  drawOnCanvas(canvas, img, c, name, scale);
+}
+
+function downloadCard() {
+  const name = document.getElementById('empName').value.trim();
+  if (!name || !selectedEmpDesign) return;
+  const img = DESIGNS[selectedEmpDesign].img;
+  const c   = DESIGNS[selectedEmpDesign].cfg;
+  const canvas = document.getElementById('hiresCanvas');
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  drawOnCanvas(canvas, img, c, name, 1);
+  canvas.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'بطاقة-' + name + '.png';
+    a.click();
+  }, 'image/png');
+}
+
+/* ════════════════════════════════
+   SHARED CANVAS DRAW
+════════════════════════════════ */
+function drawOnCanvas(canvas, img, c, text, scale) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  ctx.font         = c.w + ' ' + Math.round(c.sz * scale) + "px 'Beiruti', sans-serif";
+  ctx.fillStyle    = c.clr;
+  ctx.textAlign    = c.al;
+  ctx.textBaseline = 'middle';
+  if (c.sh > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.sh * scale; }
+  ctx.fillText(text, c.x * scale, c.y * scale);
+  ctx.shadowBlur = 0;
+}
+
+/* ════════════════════════════════
+   ADMIN AUTH
+════════════════════════════════ */
+function checkPw() {
+  const pw     = document.getElementById('pwInput').value;
+  const stored = localStorage.getItem('adminPw') || DEFAULT_PW;
+  if (pw === stored) {
+    document.getElementById('lockOverlay').style.display = 'none';
+    loadSavedImages();
+    setTimeout(() => {
+      [1,2].forEach(n => {
+        document.getElementById('dtab'+n).classList.toggle('has-img', !!DESIGNS[n].img);
+      });
+      applyUIFromDesign(activeDesign);
+      if (DESIGNS[activeDesign].img) { showAdminCanvas(); adminRender(); }
+    }, 100);
+  } else {
+    document.getElementById('lockErr').textContent = '❌ كلمة المرور غير صحيحة';
+    document.getElementById('pwInput').value = '';
+    setTimeout(() => document.getElementById('lockErr').textContent = '', 2500);
   }
+}
 
-  function selectDesign(n) {
-    if (!images[n]) return;
-    selectedDesign = n;
-    document.getElementById('card1').classList.toggle('selected', n === 1);
-    document.getElementById('card2').classList.toggle('selected', n === 2);
-    // Re-render preview if name already entered
-    if (document.getElementById('empName').value.trim()) renderPreview();
+function changePw() {
+  const np = prompt('كلمة المرور الجديدة:');
+  if (!np || np.trim().length < 4) { alert('يجب أن تكون 4 أحرف على الأقل'); return; }
+  if (np !== prompt('أعد الإدخال:')) { alert('كلمتا المرور غير متطابقتين'); return; }
+  localStorage.setItem('adminPw', np);
+  alert('✔ تم تغيير كلمة المرور');
+}
+
+/* ════════════════════════════════
+   ADMIN — DESIGN TABS
+════════════════════════════════ */
+function switchDesign(n) {
+  readUIIntoConfig(activeDesign);
+  activeDesign = n;
+  document.querySelectorAll('.dtab').forEach((t,i) => t.classList.toggle('active', i+1 === n));
+  document.getElementById('saveNum').textContent = n === 1 ? 'الأول' : 'الثاني';
+  applyUIFromDesign(n);
+  if (DESIGNS[n].img) { showAdminCanvas(); adminRender(); }
+  else { hideAdminCanvas(); }
+}
+
+/* ════════════════════════════════
+   ADMIN — UI SYNC
+════════════════════════════════ */
+function applyUIFromDesign(n) {
+  const c = DESIGNS[n].cfg;
+  document.getElementById('aX').value      = c.x;
+  document.getElementById('aY').value      = c.y;
+  document.getElementById('aSize').value   = c.sz;
+  document.getElementById('aSizeVal').textContent = c.sz + 'px';
+  document.getElementById('aWeight').value = c.w;
+  document.getElementById('aColor').value  = c.clr;
+  document.getElementById('aAlign').value  = c.al;
+  document.getElementById('aShadow').value = c.sh;
+  const ua = document.getElementById('uploadArea');
+  if (DESIGNS[n].img) {
+    ua.classList.add('loaded');
+    document.getElementById('uIcon').textContent = '✅';
+    document.getElementById('uText').textContent = 'تم الرفع — انقر للتغيير';
+  } else {
+    ua.classList.remove('loaded');
+    document.getElementById('uIcon').textContent = '🖼️';
+    document.getElementById('uText').textContent = 'اسحب أو انقر لرفع الصورة';
   }
+}
 
-  function onNameChange() {
-    const name = document.getElementById('empName').value.trim();
-    document.getElementById('downloadBtn').disabled = !name || !selectedDesign;
-    if (name && selectedDesign) renderPreview();
+function readUIIntoConfig(n) {
+  const c = DESIGNS[n].cfg;
+  c.x   = parseInt(document.getElementById('aX').value)    || 50;
+  c.y   = parseInt(document.getElementById('aY').value)    || 50;
+  c.sz  = parseInt(document.getElementById('aSize').value) || 60;
+  c.w   = document.getElementById('aWeight').value;
+  c.clr = document.getElementById('aColor').value;
+  c.al  = document.getElementById('aAlign').value;
+  c.sh  = parseInt(document.getElementById('aShadow').value);
+}
+
+/* ════════════════════════════════
+   ADMIN — UPLOAD
+════════════════════════════════ */
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      DESIGNS[activeDesign].img = img;
+      localStorage.setItem('cardImage' + activeDesign, ev.target.result);
+      document.getElementById('dtab' + activeDesign).classList.add('has-img');
+      applyUIFromDesign(activeDesign);
+      showAdminCanvas();
+      adminRender();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+
+const ua = document.getElementById('uploadArea');
+ua.addEventListener('dragover', e => { e.preventDefault(); ua.classList.add('drag-over'); });
+ua.addEventListener('dragleave', () => ua.classList.remove('drag-over'));
+ua.addEventListener('drop', e => {
+  e.preventDefault(); ua.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const dt = new DataTransfer(); dt.items.add(file);
+    document.getElementById('fileInput').files = dt.files;
+    document.getElementById('fileInput').dispatchEvent(new Event('change'));
   }
+});
 
-  function getConfig(n) {
-    return configs[n] || { x:50, y:50, fontSize:60, fontWeight:'600', color:'#ffffff', align:'center', shadowBlur:6 };
+/* ════════════════════════════════
+   ADMIN — CANVAS
+════════════════════════════════ */
+document.getElementById('adminCanvas').addEventListener('click', function(e) {
+  const img = DESIGNS[activeDesign].img;
+  if (!img) return;
+  const rect = this.getBoundingClientRect();
+  const x = Math.round((e.clientX - rect.left) * (img.naturalWidth  / rect.width));
+  const y = Math.round((e.clientY - rect.top)  * (img.naturalHeight / rect.height));
+  document.getElementById('aX').value = x;
+  document.getElementById('aY').value = y;
+  DESIGNS[activeDesign].cfg.x = x;
+  DESIGNS[activeDesign].cfg.y = y;
+  adminRender();
+});
+
+function adminRender() {
+  readUIIntoConfig(activeDesign);
+  const img = DESIGNS[activeDesign].img;
+  if (!img) return;
+  const c = DESIGNS[activeDesign].cfg;
+
+  const canvas = document.getElementById('adminCanvas');
+  const area   = canvas.parentElement;
+  const maxW   = area.clientWidth  - 28;
+  const maxH   = area.clientHeight - 40;
+  const ratio  = img.naturalWidth / img.naturalHeight;
+  let w = maxW, h = maxW / ratio;
+  if (h > maxH) { h = maxH; w = maxH * ratio; }
+  canvas.width = Math.round(w); canvas.height = Math.round(h);
+  drawOnCanvas(canvas, img, c, 'اسم الموظف', w / img.naturalWidth);
+}
+
+function showAdminCanvas() {
+  document.getElementById('adminPh').style.display     = 'none';
+  document.getElementById('adminCanvas').style.display = 'block';
+  document.getElementById('adminHint').style.display   = 'block';
+}
+
+function hideAdminCanvas() {
+  document.getElementById('adminPh').style.display     = 'flex';
+  document.getElementById('adminCanvas').style.display = 'none';
+  document.getElementById('adminHint').style.display   = 'none';
+}
+
+function updateSize() {
+  document.getElementById('aSizeVal').textContent = document.getElementById('aSize').value + 'px';
+  adminRender();
+}
+
+/* ════════════════════════════════
+   ADMIN — SAVE
+════════════════════════════════ */
+function saveDesign() {
+  readUIIntoConfig(activeDesign);
+  localStorage.setItem('cardConfig' + activeDesign, JSON.stringify(DESIGNS[activeDesign].cfg));
+  document.getElementById('savedBadge').style.display = 'block';
+  setTimeout(() => document.getElementById('savedBadge').style.display = 'none', 3000);
+}
+
+/* ════════════════════════════════
+   RESIZE
+════════════════════════════════ */
+window.addEventListener('resize', () => {
+  if (document.getElementById('adminScreen').classList.contains('active') && DESIGNS[activeDesign].img) {
+    adminRender();
   }
-
-  function renderPreview() {
-    if (!selectedDesign || !images[selectedDesign]) return;
-    const name = document.getElementById('empName').value.trim();
-    if (!name) return;
-
-    const img = images[selectedDesign];
-    const c   = getConfig(selectedDesign);
-
-    document.getElementById('previewWrap').style.display = 'flex';
-
-    const canvas = document.getElementById('preview');
-    const maxW   = document.querySelector('.name-form').clientWidth - 48;
-    const scale  = maxW / img.naturalWidth;
-    canvas.width  = Math.round(img.naturalWidth  * scale);
-    canvas.height = Math.round(img.naturalHeight * scale);
-
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    ctx.font         = `${c.fontWeight} ${Math.round(c.fontSize * scale)}px 'Beiruti', sans-serif`;
-    ctx.fillStyle    = c.color;
-    ctx.textAlign    = c.align;
-    ctx.textBaseline = 'middle';
-    if (c.shadowBlur > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.shadowBlur * scale; }
-    ctx.fillText(name, c.x * scale, c.y * scale);
-    ctx.shadowBlur = 0;
-  }
-
-  function downloadCard() {
-    const name = document.getElementById('empName').value.trim();
-    if (!name || !selectedDesign || !images[selectedDesign]) return;
-
-    const img = images[selectedDesign];
-    const c   = getConfig(selectedDesign);
-
-    const canvas = document.getElementById('hiresCanvas');
-    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    ctx.font         = `${c.fontWeight} ${c.fontSize}px 'Beiruti', sans-serif`;
-    ctx.fillStyle    = c.color;
-    ctx.textAlign    = c.align;
-    ctx.textBaseline = 'middle';
-    if (c.shadowBlur > 0) { ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = c.shadowBlur; }
-    ctx.fillText(name, c.x, c.y);
-    ctx.shadowBlur = 0;
-
-    canvas.toBlob(blob => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `بطاقة-${name}.png`;
-      a.click();
-    }, 'image/png');
-  }
+});
 </script>
 </body>
 </html>
